@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: warrenbailey/hey
+  repository: gcr.io/jenkinsxio/hey
   tag: latest
   pullPolicy: IfNotPresent
 
