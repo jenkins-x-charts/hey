@@ -1,0 +1,66 @@
+{{- if .Values.job.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "hey.name" . }}
+  labels:
+    app: {{ template "hey.name" . }}
+    chart: {{ template "hey.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.job.annotations }}
+  annotations:
+{{ toYaml .Values.job.annotations | indent 4 }}
+{{- end }}
+spec:
+  backoffLimit: {{ .Values.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "hey.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.restartPolicy }}
+      restartPolicy: {{ .Values.restartPolicy }}
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          command: ["hey"]
+          args:
+            - -c
+            - "{{ .Values.hey.concurrentRequests }}"
+            - -n
+            - "{{ .Values.hey.numberOfRequests }}"
+            - "{{ .Values.hey.url }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.internalPort }}
+              protocol: TCP
+{{- if .Values.probe.path }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probe.path }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probe.path }}
+              port: http
+{{- end }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- end }}
