@@ -58,7 +58,7 @@ affinity: {}
 # default is Always but for Jobs use Never or OnFailure
 restartPolicy: Never
 
-hey:
+load:
   url: "http://flask-test"
   numberOfRequests: 1000
   concurrentRequests: 100
