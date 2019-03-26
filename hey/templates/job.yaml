@@ -29,10 +29,10 @@ spec:
           command: ["hey"]
           args:
             - -c
-            - "{{ .Values.hey.concurrentRequests }}"
+            - "{{ .Values.load.concurrentRequests }}"
             - -n
-            - "{{ .Values.hey.numberOfRequests }}"
-            - "{{ .Values.hey.url }}"
+            - "{{ .Values.load.numberOfRequests }}"
+            - "{{ .Values.load.url }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
