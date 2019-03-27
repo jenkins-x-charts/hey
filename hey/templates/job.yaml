@@ -24,6 +24,10 @@ spec:
 {{- if .Values.restartPolicy }}
       restartPolicy: {{ .Values.restartPolicy }}
 {{- end }}
+      initContainers:
+        - name: wait-for-service
+          image: centos:7
+          command: ["sh", "-c", "until curl -s -f -o /dev/null {{ .Values.load.url }}; do echo waiting for {{ .Values.load.url }}; sleep 1; done;"]
       containers:
         - name: {{ .Chart.Name }}
           command: ["hey"]
